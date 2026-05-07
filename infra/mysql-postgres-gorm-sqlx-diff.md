@@ -1,0 +1,590 @@
+# SQL, NoSQL, MySQL, PostgreSQL, GORM, SQLX CHEAT SHEET
+
+---
+
+# SQL
+
+## Apa Itu?
+
+SQL = Structured Query Language.
+
+Database relational:
+- Data berbentuk tabel
+- Punya schema
+- Relasi antar table
+
+---
+
+## Prinsip SQL
+
+- Table
+- Row
+- Column
+- Relational
+- ACID transaction
+- Structured schema
+
+---
+
+## Karakteristik
+
+- Strong consistency
+- Relational query
+- JOIN support
+- Transaction kuat
+
+---
+
+## Keunggulan
+
+- Relasi data sangat kuat
+- Query kompleks powerful
+- ACID transaction
+- Mature ecosystem
+
+---
+
+## Kelemahan
+
+- Scaling horizontal lebih sulit
+- Schema rigid
+- Kurang fleksibel untuk unstructured data
+
+---
+
+## Use Case
+
+- Banking
+- ERP
+- Accounting
+- E-commerce
+- Financial system
+
+---
+
+## 5 Contoh Penggunaan SQL
+
+1. Banking transaction
+2. Order management
+3. Inventory system
+4. HR system
+5. Financial reporting
+
+---
+
+# NOSQL
+
+## Apa Itu?
+
+NoSQL = Non-relational database.
+
+Data bisa:
+- Document
+- Key-value
+- Graph
+- Wide-column
+
+---
+
+## Prinsip NoSQL
+
+- Flexible schema
+- Horizontal scaling
+- High throughput
+- Distributed system
+
+---
+
+## Karakteristik
+
+- Tidak wajib relational
+- Flexible structure
+- Cocok big data
+- High scalability
+
+---
+
+## Keunggulan
+
+- Scaling lebih mudah
+- Flexible schema
+- Cocok realtime & big data
+- High throughput
+
+---
+
+## Kelemahan
+
+- JOIN terbatas
+- Consistency kadang weaker
+- Transaction tidak sekuat SQL
+
+---
+
+## Use Case
+
+- Chat system
+- Analytics
+- Realtime app
+- IoT
+- Social media
+
+---
+
+## 5 Contoh Penggunaan NoSQL
+
+1. Chat application
+2. User activity tracking
+3. Recommendation engine
+4. IoT telemetry
+5. Session storage
+
+---
+
+# MYSQL
+
+## Apa Itu?
+
+MySQL adalah relational database SQL paling populer.
+
+Website:
+
+```text
+https://mysql.com
+```
+
+---
+
+## Karakteristik
+
+- Relational database
+- Open source
+- Sangat populer
+- Mudah dipakai
+
+---
+
+## Keunggulan
+
+- Simple
+- Cepat
+- Banyak tutorial
+- Ecosystem besar
+- Hosting murah
+
+---
+
+## Kelemahan
+
+- Advanced feature kalah dari PostgreSQL
+- Complex analytics lebih terbatas
+
+---
+
+## Cocok Untuk
+
+- Web application
+- CRUD application
+- CMS
+- Small-medium system
+
+---
+
+## 5 Contoh Penggunaan MySQL
+
+1. Laravel backend
+2. WordPress
+3. E-commerce
+4. Company dashboard
+5. CMS system
+
+---
+
+## Contoh Query
+
+```sql
+SELECT * FROM users;
+```
+
+---
+
+# POSTGRESQL
+
+## Apa Itu?
+
+PostgreSQL = advanced relational database.
+
+Website:
+
+```text
+https://postgresql.org
+```
+
+---
+
+## Karakteristik
+
+- Relational database
+- Advanced SQL feature
+- Strong consistency
+- Sangat powerful
+
+---
+
+## Keunggulan
+
+- Query kompleks sangat kuat
+- JSON support bagus
+- ACID sangat kuat
+- Advanced indexing
+
+---
+
+## Kelemahan
+
+- Lebih kompleks
+- Tuning lebih advanced
+
+---
+
+## Cocok Untuk
+
+- Enterprise system
+- Analytics
+- Financial system
+- High consistency app
+
+---
+
+## 5 Contoh Penggunaan PostgreSQL
+
+1. Banking
+2. Analytics platform
+3. GIS/location system
+4. Enterprise ERP
+5. Financial reporting
+
+---
+
+## Feature Kuat PostgreSQL
+
+- JSONB
+- CTE
+- Window function
+- Advanced indexing
+- Full text search
+
+---
+
+## Contoh Query
+
+```sql
+SELECT * FROM transactions;
+```
+
+---
+
+# MYSQL VS POSTGRESQL
+
+| Feature | MySQL | PostgreSQL |
+|---|---|---|
+| Learning curve | Lebih mudah | Lebih advanced |
+| Performance CRUD | Sangat bagus | Bagus |
+| Complex query | Medium | Sangat kuat |
+| JSON support | Ada | Sangat bagus |
+| Analytics | Medium | Sangat bagus |
+| Enterprise feature | Medium | Sangat kuat |
+
+---
+
+# GORM
+
+## Apa Itu?
+
+GORM = ORM library Go.
+
+ORM:
+- Mapping struct Go ↔ database table
+
+Website:
+
+```text
+https://gorm.io
+```
+
+---
+
+## Prinsip GORM
+
+- ORM abstraction
+- Struct-based model
+- Auto migration
+- Query builder
+
+---
+
+## Keunggulan
+
+- Coding lebih cepat
+- Auto migration
+- Relasi lebih mudah
+- Minim raw query
+
+---
+
+## Kelemahan
+
+- Lebih lambat dari raw SQL
+- Query kadang tidak optimal
+- Hidden complexity
+
+---
+
+## Cocok Untuk
+
+- Rapid development
+- CRUD application
+- Small-medium backend
+
+---
+
+## 5 Contoh Penggunaan GORM
+
+1. User CRUD
+2. Authentication service
+3. CMS backend
+4. Admin dashboard
+5. Rapid prototype
+
+---
+
+## Contoh Model
+
+```go
+type User struct {
+    ID   uint
+    Name string
+}
+```
+
+---
+
+## Contoh Query
+
+```go
+db.Find(&users)
+```
+
+---
+
+# SQLX
+
+## Apa Itu?
+
+SQLX = extension database/sql untuk Go.
+
+Website:
+
+```text
+https://github.com/jmoiron/sqlx
+```
+
+---
+
+## Prinsip SQLX
+
+- Raw SQL tetap dipakai
+- Helper lebih nyaman
+- Minimal abstraction
+
+---
+
+## Karakteristik
+
+- Dekat ke SQL asli
+- Lebih ringan dari ORM
+- Full control query
+
+---
+
+## Keunggulan
+
+- Query performa bagus
+- Lebih fleksibel
+- Tidak hidden query
+- Full SQL power
+
+---
+
+## Kelemahan
+
+- Lebih banyak manual query
+- Boilerplate lebih banyak
+- Tidak secepat ORM untuk development
+
+---
+
+## Cocok Untuk
+
+- High performance backend
+- Complex query
+- Enterprise API
+- Query optimization
+
+---
+
+## 5 Contoh Penggunaan SQLX
+
+1. Analytics API
+2. Financial backend
+3. High performance service
+4. Complex reporting
+5. Query-heavy backend
+
+---
+
+## Contoh Query
+
+```go
+db.Select(&users, "SELECT * FROM users")
+```
+
+---
+
+# GORM VS SQLX
+
+| Feature | GORM | SQLX |
+|---|---|---|
+| Type | ORM | Raw SQL helper |
+| Learning | Mudah | Medium |
+| Performance | Medium | Tinggi |
+| Flexibility | Medium | Tinggi |
+| Auto migration | Ya | Tidak |
+| Complex query | Kadang ribet | Sangat fleksibel |
+
+---
+
+# KAPAN PAKAI GORM?
+
+Gunakan GORM saat:
+- CRUD cepat
+- Rapid development
+- Tim kecil
+- Prototype
+
+---
+
+# KAPAN PAKAI SQLX?
+
+Gunakan SQLX saat:
+- Query kompleks
+- Performance penting
+- High traffic
+- Full control SQL
+
+---
+
+# ANALOGI
+
+## GORM
+
+Seperti naik mobil automatic.
+
+- Mudah
+- Cepat dipakai
+- Tapi control terbatas
+
+---
+
+## SQLX
+
+Seperti mobil manual.
+
+- Lebih ribet
+- Tapi full control
+
+---
+
+# BEST PRACTICE
+
+## SQL
+
+- Gunakan indexing
+- Gunakan transaction
+- Hindari N+1 query
+
+---
+
+## NoSQL
+
+- Design schema sesuai access pattern
+- Hindari over-normalization
+
+---
+
+## GORM
+
+- Jangan over preload
+- Gunakan raw query untuk query berat
+
+---
+
+## SQLX
+
+- Gunakan prepared statement
+- Gunakan transaction dengan benar
+
+---
+
+# INTERVIEW QUESTION
+
+## Q
+
+Apa beda SQL dan NoSQL?
+
+## A
+
+SQL relational dan schema-based.
+NoSQL flexible dan scalable.
+
+---
+
+## Q
+
+Apa beda MySQL dan PostgreSQL?
+
+## A
+
+MySQL lebih simple.
+PostgreSQL lebih advanced dan powerful.
+
+---
+
+## Q
+
+Apa beda GORM dan SQLX?
+
+## A
+
+GORM adalah ORM abstraction.
+SQLX lebih dekat ke raw SQL.
+
+---
+
+## Q
+
+Kapan pakai NoSQL?
+
+## A
+
+Saat butuh scalability tinggi dan flexible schema.
+
+---
+
+## Q
+
+Kapan SQL lebih cocok?
+
+## A
+
+Saat relational data dan ACID transaction penting.
