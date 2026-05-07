@@ -417,32 +417,388 @@ go run -race
 
 # TOOLS YANG SERING DIPAKAI
 
-## Mutex
+---
+
+# MUTEX
+
+## Package
 
 ```go
 sync.Mutex
 ```
 
-## RWMutex
+## Fungsi
+
+- Mengunci akses data
+- Hanya 1 goroutine boleh akses data dalam satu waktu
+
+## Kapan Dipakai?
+
+Gunakan saat:
+- Banyak goroutine write/read shared variable
+- Critical section
+- Shared counter
+- Shared map
+- Shared struct
+
+## Cocok Untuk
+
+- Counter
+- Stock
+- Balance
+- Session cache
+- Shared memory
+
+---
+
+## Contoh Benar
+
+```go
+package main
+
+import (
+    "fmt"
+    "sync"
+)
+
+var (
+    counter int
+    mu sync.Mutex
+)
+
+func increment(wg *sync.WaitGroup) {
+    defer wg.Done()
+
+    mu.Lock()
+    counter++
+    mu.Unlock()
+}
+
+func main() {
+    var wg sync.WaitGroup
+
+    for i := 0; i < 1000; i++ {
+        wg.Add(1)
+        go increment(&wg)
+    }
+
+    wg.Wait()
+
+    fmt.Println(counter)
+}
+```
+
+## Kenapa Benar?
+
+- Hanya 1 goroutine boleh update counter
+- Tidak ada race condition
+
+---
+
+# RWMUTEX
+
+## Package
 
 ```go
 sync.RWMutex
 ```
 
-## Atomic
+## Fungsi
+
+- Pisahkan read lock dan write lock
+- Banyak reader boleh bersamaan
+- Writer tetap exclusive
+
+## Kapan Dipakai?
+
+Gunakan saat:
+- Read jauh lebih banyak daripada write
+- Cache system
+- Config data
+- In-memory data store
+
+## Cocok Untuk
+
+- Cache
+- Config
+- Session store
+- Read-heavy system
+
+---
+
+## Contoh Benar
+
+```go
+package main
+
+import (
+    "fmt"
+    "sync"
+)
+
+var (
+    data = map[string]string{
+        "name": "reski",
+    }
+
+    mu sync.RWMutex
+)
+
+func read() {
+    mu.RLock()
+    fmt.Println(data["name"])
+    mu.RUnlock()
+}
+
+func write() {
+    mu.Lock()
+    data["name"] = "golang"
+    mu.Unlock()
+}
+
+func main() {
+    go read()
+    go read()
+    go write()
+}
+```
+
+## Kenapa Pakai RWMutex?
+
+- Reader bisa paralel
+- Lebih cepat dibanding Mutex biasa untuk read-heavy workload
+
+---
+
+# ATOMIC
+
+## Package
 
 ```go
 sync/atomic
 ```
 
-## WaitGroup
+## Fungsi
+
+- Operasi low-level thread-safe
+- Tanpa mutex
+- Sangat cepat
+
+## Kapan Dipakai?
+
+Gunakan saat:
+- Counter sederhana
+- Increment/decrement
+- Flag/status
+- Statistik ringan
+
+## Cocok Untuk
+
+- Hit counter
+- Request counter
+- Boolean flag
+- Metrics
+
+## Tidak Cocok Untuk
+
+- Logic kompleks
+- Multiple variable transaction
+- Shared object besar
+
+---
+
+## Contoh Benar
+
+```go
+package main
+
+import (
+    "fmt"
+    "sync"
+    "sync/atomic"
+)
+
+var counter int64
+
+func increment(wg *sync.WaitGroup) {
+    defer wg.Done()
+
+    atomic.AddInt64(&counter, 1)
+}
+
+func main() {
+    var wg sync.WaitGroup
+
+    for i := 0; i < 1000; i++ {
+        wg.Add(1)
+        go increment(&wg)
+    }
+
+    wg.Wait()
+
+    fmt.Println(counter)
+}
+```
+
+## Kenapa Atomic?
+
+- Lebih ringan dibanding mutex
+- Cocok untuk operasi sederhana
+
+---
+
+# WAITGROUP
+
+## Package
 
 ```go
 sync.WaitGroup
 ```
 
-## Channel
+## Fungsi
+
+- Menunggu semua goroutine selesai
+
+## Kapan Dipakai?
+
+Gunakan saat:
+- Multiple goroutine paralel
+- Batch processing
+- Worker selesai semua dulu
+- Parallel API call
+
+## Cocok Untuk
+
+- Fan-out goroutine
+- Concurrent processing
+- Background task synchronization
+
+---
+
+## Contoh Benar
+
+```go
+package main
+
+import (
+    "fmt"
+    "sync"
+)
+
+func worker(id int, wg *sync.WaitGroup) {
+    defer wg.Done()
+
+    fmt.Println("worker", id)
+}
+
+func main() {
+    var wg sync.WaitGroup
+
+    for i := 1; i <= 3; i++ {
+        wg.Add(1)
+
+        go worker(i, &wg)
+    }
+
+    wg.Wait()
+
+    fmt.Println("semua selesai")
+}
+```
+
+## Kenapa Pakai WaitGroup?
+
+- Main goroutine menunggu semua worker selesai
+- Tanpa ini program bisa exit terlalu cepat
+
+---
+
+# CHANNEL
+
+## Package
 
 ```go
 chan int
 ```
+
+## Fungsi
+
+- Komunikasi antar goroutine
+- Transfer data safely
+
+## Kapan Dipakai?
+
+Gunakan saat:
+- Worker queue
+- Pipeline
+- Event streaming
+- Signaling
+- Async communication
+
+## Cocok Untuk
+
+- Job queue
+- Kafka consumer
+- Event processing
+- Producer-consumer
+
+---
+
+## Contoh Benar
+
+```go
+package main
+
+import "fmt"
+
+func worker(ch chan string) {
+    ch <- "job selesai"
+}
+
+func main() {
+    ch := make(chan string)
+
+    go worker(ch)
+
+    result := <-ch
+
+    fmt.Println(result)
+}
+```
+
+## Kenapa Pakai Channel?
+
+- Aman untuk komunikasi data
+- Tidak perlu shared memory langsung
+
+---
+
+# PERBANDINGAN CEPAT
+
+| Tool | Cocok Untuk |
+|---|---|
+| Mutex | Shared data write |
+| RWMutex | Read-heavy shared data |
+| Atomic | Counter sederhana |
+| WaitGroup | Tunggu goroutine selesai |
+| Channel | Komunikasi antar goroutine |
+
+---
+
+# RULE UMUM
+
+## Mutex
+- Jangan lupa Unlock()
+
+## RWMutex
+- Gunakan jika read lebih banyak dari write
+
+## Atomic
+- Hanya untuk operasi sederhana
+
+## WaitGroup
+- Semua Add() wajib punya Done()
+
+## Channel
+- Jangan kirim tanpa receiver
+- Hindari deadlock
