@@ -1,0 +1,210 @@
+
+GO CHANNEL CHEAT SHEET
+
+==================================================
+UNBUFFERED CHANNEL
+==================================================
+
+Create:
+    ch := make(chan int)
+
+Karakteristik:
+- Tidak punya buffer
+- Sender dan receiver harus siap bersamaan
+- Cocok untuk synchronization dan signaling
+
+Block Conditions:
+- Sender block jika belum ada receiver
+- Receiver block jika belum ada sender
+
+Flow:
+    Sender <--> Receiver
+
+Contoh Basic:
+    package main
+
+    import "fmt"
+
+    func main() {
+        ch := make(chan int)
+
+        go func() {
+            ch <- 10
+        }()
+
+        value := <-ch
+
+        fmt.Println(value)
+    }
+
+Penjelasan:
+- Goroutine mengirim angka 10
+- Tapi akan menunggu sampai ada receiver
+- Main goroutine menerima data
+- Setelah itu program lanjut
+
+
+Contoh Deadlock:
+    package main
+
+    func main() {
+        ch := make(chan int)
+
+        ch <- 1
+    }
+
+Error:
+    fatal error: all goroutines are asleep - deadlock
+
+Kenapa?
+- Tidak ada receiver
+- Sender terus menunggu
+
+
+Use Case:
+- Signal selesai
+- Sinkronisasi goroutine
+- Notify antar process
+
+Contoh Signal:
+    done := make(chan bool)
+
+==================================================
+BUFFERED CHANNEL
+==================================================
+
+Create:
+    ch := make(chan int, 2)
+
+Angka 2 = kapasitas buffer
+
+Karakteristik:
+- Punya buffer/antrian internal
+- Sender bisa kirim tanpa receiver langsung
+- Cocok untuk queue dan worker pool
+
+Block Conditions:
+- Sender block jika buffer penuh
+- Receiver block jika buffer kosong
+
+Flow:
+    Sender -> Buffer -> Receiver
+
+Contoh Basic:
+    package main
+
+    import "fmt"
+
+    func main() {
+        ch := make(chan int, 2)
+
+        ch <- 1
+        ch <- 2
+
+        fmt.Println(<-ch)
+        fmt.Println(<-ch)
+    }
+
+Penjelasan:
+- Data masuk ke buffer
+- Tidak langsung butuh receiver
+- Receiver bisa baca nanti
+
+
+Contoh Buffer Full:
+    package main
+
+    func main() {
+        ch := make(chan int, 2)
+
+        ch <- 1
+        ch <- 2
+        ch <- 3
+    }
+
+Kenapa block?
+- Buffer hanya muat 2 data
+- Data ke-3 harus menunggu
+
+
+Use Case:
+- Worker pool
+- Job queue
+- Event pipeline
+- Kafka consumer
+- Background task
+
+Contoh Worker Queue:
+    jobs := make(chan Job, 100)
+
+==================================================
+PERBANDINGAN
+==================================================
+
+UNBUFFERED:
+- Tidak ada queue
+- Full synchronous
+- Direct handoff
+- Lebih ketat untuk synchronization
+
+BUFFERED:
+- Ada queue
+- Semi asynchronous
+- Bisa simpan data sementara
+- Cocok untuk throughput tinggi
+
+==================================================
+ANALOGI
+==================================================
+
+UNBUFFERED:
+- Telepon
+- Pengirim & penerima harus aktif bersamaan
+
+BUFFERED:
+- Email inbox
+- Pengirim bisa kirim dulu
+- Penerima baca nanti
+
+==================================================
+RULE PENTING
+==================================================
+
+1. Jangan lupa receiver
+   Kalau tidak -> deadlock
+
+2. Buffered channel tetap bisa block
+   Kalau buffer penuh
+
+3. Close channel hanya dari sender
+
+4. Channel cocok untuk komunikasi data
+   Mutex cocok untuk shared memory kompleks
+
+==================================================
+CLOSE CHANNEL
+==================================================
+
+Close:
+    close(ch)
+
+Digunakan untuk memberi tahu:
+    "Tidak ada data lagi"
+
+Contoh:
+    v, ok := <-ch
+
+- ok = true  -> masih ada data
+- ok = false -> channel sudah close
+
+==================================================
+RANGE CHANNEL
+==================================================
+
+Contoh:
+    for v := range ch {
+        fmt.Println(v)
+    }
+
+Loop otomatis berhenti saat channel di-close
+
