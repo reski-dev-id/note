@@ -1,0 +1,461 @@
+==================================================
+PUB/SUB REDIS VS RABBITMQ VS KAFKA CHEAT SHEET
+==================================================
+
+==================================================
+APA ITU PUB/SUB?
+==================================================
+
+Pub/Sub = Publish/Subscribe pattern.
+
+Flow:
+
+    Publisher -> Broker/System -> Subscriber
+
+Publisher:
+- Mengirim event/message
+
+Subscriber:
+- Menerima event/message
+
+Tujuan:
+- Decouple service
+- Async communication
+- Realtime event processing
+
+==================================================
+PERBEDAAN UTAMA
+==================================================
+
+Redis Pub/Sub:
+- Realtime pub/sub
+- Tidak durable
+- Tidak ada replay
+- Sangat cepat
+- Simple
+
+RabbitMQ:
+- Message broker
+- Durable queue
+- ACK dan retry
+- Reliable worker queue
+
+Kafka:
+- Event streaming
+- Replay event
+- High throughput
+- Massive scaling
+
+==================================================
+REDIS PUB/SUB
+==================================================
+
+Apa Itu?
+- Redis publish message langsung ke subscriber
+
+Flow:
+
+    Publisher -> Redis Channel -> Subscriber
+
+--------------------------------------------------
+
+KELEBIHAN:
+- Sangat cepat
+- Simple
+- Lightweight
+- Setup mudah
+- Latency rendah
+
+--------------------------------------------------
+
+KELEMAHAN:
+- Tidak durable
+- Message hilang kalau subscriber offline
+- Tidak ada replay
+- Tidak cocok big data
+- Tidak cocok critical transaction
+
+--------------------------------------------------
+
+KAPAN DIPAKAI?
+- Realtime ringan
+- Live notification
+- Chat sederhana
+- Low latency event
+
+--------------------------------------------------
+
+5 CONTOH:
+1. Live chat sederhana
+2. Live notification
+3. Online user status
+4. Multiplayer game event ringan
+5. Live dashboard kecil
+
+--------------------------------------------------
+
+CONTOH FLOW:
+
+    User kirim chat
+        ↓
+    Redis publish
+        ↓
+    Subscriber realtime menerima
+
+--------------------------------------------------
+
+CONTOH COMMAND:
+
+Publish:
+    PUBLISH chat "hello"
+
+Subscribe:
+    SUBSCRIBE chat
+
+==================================================
+RABBITMQ
+==================================================
+
+Apa Itu?
+- Message broker dengan queue system
+
+Flow:
+
+    Producer -> Exchange -> Queue -> Consumer
+
+--------------------------------------------------
+
+KELEBIHAN:
+- Reliable
+- Durable queue
+- Retry support
+- ACK support
+- Complex routing
+
+--------------------------------------------------
+
+KELEMAHAN:
+- Lebih lambat dibanding Redis
+- Scaling lebih kompleks
+- Tidak ideal untuk massive event streaming
+
+--------------------------------------------------
+
+KAPAN DIPAKAI?
+- Background job
+- Worker queue
+- Critical processing
+- Transaction queue
+
+--------------------------------------------------
+
+5 CONTOH:
+1. Email queue
+2. Payment processing
+3. Invoice generation
+4. Notification worker
+5. Image/video processing
+
+--------------------------------------------------
+
+CONTOH FLOW:
+
+    Order dibuat
+        ↓
+    RabbitMQ queue
+        ↓
+    Payment worker process
+
+--------------------------------------------------
+
+FITUR PENTING:
+
+ACK:
+- Message dianggap sukses setelah consumer ACK
+
+Retry:
+- Failed message bisa diproses ulang
+
+DLQ:
+- Message gagal masuk dead letter queue
+
+==================================================
+KAFKA
+==================================================
+
+Apa Itu?
+- Distributed event streaming platform
+
+Flow:
+
+    Producer -> Topic -> Consumer Group
+
+--------------------------------------------------
+
+KELEBIHAN:
+- High throughput
+- Replay event
+- Durable
+- Massive scaling
+- Cocok big data
+
+--------------------------------------------------
+
+KELEMAHAN:
+- Setup lebih kompleks
+- Learning curve tinggi
+- Overkill untuk aplikasi kecil
+
+--------------------------------------------------
+
+KAPAN DIPAKAI?
+- Big data streaming
+- Event streaming massive
+- Realtime analytics
+- Banyak service consume event sama
+
+--------------------------------------------------
+
+5 CONTOH:
+1. Fraud detection realtime
+2. Clickstream analytics
+3. User activity tracking
+4. IoT telemetry
+5. Recommendation engine realtime
+
+--------------------------------------------------
+
+CONTOH FLOW:
+
+    User click aplikasi
+        ↓
+    Kafka topic
+        ↓
+    Analytics service baca
+        ↓
+    Fraud service baca
+        ↓
+    Recommendation service baca
+
+--------------------------------------------------
+
+FITUR PENTING:
+
+Replay Event:
+- Consumer bisa baca ulang event lama
+
+Partition:
+- Parallel processing massive
+
+Consumer Group:
+- Share workload antar consumer
+
+==================================================
+PERBEDAAN CARA KERJA
+==================================================
+
+REDIS PUB/SUB:
+- Message langsung realtime
+- Subscriber offline -> message hilang
+
+--------------------------------------------------
+
+RABBITMQ:
+- Message masuk queue dulu
+- Consumer offline -> message tetap aman
+
+--------------------------------------------------
+
+KAFKA:
+- Message disimpan di topic log
+- Bisa replay kapan saja
+
+==================================================
+PERBEDAAN DURABILITY
+==================================================
+
+Redis Pub/Sub:
+- Tidak durable
+
+RabbitMQ:
+- Durable
+
+Kafka:
+- Durable
+
+==================================================
+PERBEDAAN REPLAY MESSAGE
+==================================================
+
+Redis Pub/Sub:
+- Tidak bisa replay
+
+RabbitMQ:
+- Terbatas
+
+Kafka:
+- Bisa replay
+
+==================================================
+PERBEDAAN SCALING
+==================================================
+
+Redis Pub/Sub:
+- Medium
+
+RabbitMQ:
+- Medium
+
+Kafka:
+- Sangat scalable
+
+==================================================
+PERBEDAAN LATENCY
+==================================================
+
+Redis Pub/Sub:
+- Sangat rendah
+
+RabbitMQ:
+- Rendah
+
+Kafka:
+- Rendah
+
+==================================================
+PERBEDAAN COMPLEXITY
+==================================================
+
+Redis Pub/Sub:
+- Paling simple
+
+RabbitMQ:
+- Medium
+
+Kafka:
+- Paling kompleks
+
+==================================================
+REAL CASE PEMILIHAN
+==================================================
+
+Gunakan Redis Pub/Sub jika:
+- Butuh realtime ringan
+- Tidak perlu persistence
+- Tidak perlu replay
+
+Contoh:
+- Chat kecil
+- Online status
+
+--------------------------------------------------
+
+Gunakan RabbitMQ jika:
+- Butuh reliable queue
+- Butuh retry
+- Butuh ACK
+- Worker processing
+
+Contoh:
+- Payment
+- Email queue
+- Background worker
+
+--------------------------------------------------
+
+Gunakan Kafka jika:
+- Big data
+- Massive event streaming
+- Realtime analytics
+- Banyak consumer baca event sama
+
+Contoh:
+- Analytics platform
+- Banking stream
+- IoT platform
+
+==================================================
+ANALOGI
+==================================================
+
+Redis Pub/Sub:
+- Walkie-talkie realtime
+- Tidak didengar sekarang -> hilang
+
+--------------------------------------------------
+
+RabbitMQ:
+- Kurir paket
+- Paket disimpan sampai diterima
+
+--------------------------------------------------
+
+Kafka:
+- CCTV / event recorder
+- Semua event direkam
+- Bisa diputar ulang
+
+==================================================
+BEST PRACTICE
+==================================================
+
+Redis Pub/Sub:
+- Gunakan hanya untuk realtime ringan
+
+--------------------------------------------------
+
+RabbitMQ:
+- Gunakan durable queue
+- Gunakan manual ACK
+- Gunakan DLQ
+
+--------------------------------------------------
+
+Kafka:
+- Gunakan partition cukup
+- Monitor consumer lag
+- Gunakan schema event konsisten
+
+==================================================
+INTERVIEW QUESTION
+==================================================
+
+Q:
+Apa beda Redis Pub/Sub dan RabbitMQ?
+
+A:
+Redis Pub/Sub realtime dan lightweight tetapi tidak durable.
+RabbitMQ reliable queue dengan ACK dan retry.
+
+--------------------------------------------------
+
+Q:
+Apa beda RabbitMQ dan Kafka?
+
+A:
+RabbitMQ fokus queue dan worker processing.
+Kafka fokus event streaming massive dan replay event.
+
+--------------------------------------------------
+
+Q:
+Kenapa Kafka cocok untuk analytics?
+
+A:
+Karena scalable, replayable, dan high throughput.
+
+--------------------------------------------------
+
+Q:
+Kapan Redis Pub/Sub cocok dipakai?
+
+A:
+Untuk realtime event ringan seperti chat dan live notification.
+
+--------------------------------------------------
+
+Q:
+Kapan RabbitMQ lebih baik dibanding Kafka?
+
+A:
+Saat butuh reliable worker queue dan transaction processing.
