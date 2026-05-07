@@ -1,0 +1,557 @@
+==================================================
+KAFKA CHEAT SHEET
+==================================================
+
+==================================================
+APA ITU KAFKA?
+==================================================
+
+- Distributed event streaming platform
+- Digunakan untuk high throughput data streaming
+- Bisa handle jutaan message
+- Sangat populer untuk big data dan realtime processing
+
+Website:
+    https://kafka.apache.org
+
+==================================================
+KENAPA PAKAI KAFKA?
+==================================================
+
+- High throughput
+- Scalable
+- Durable
+- Real-time streaming
+- Event-driven architecture
+- Bisa replay message
+
+==================================================
+ANALOGI
+==================================================
+
+RabbitMQ:
+- Mirip antrean tugas
+
+Kafka:
+- Mirip log/event stream besar
+
+--------------------------------------------------
+
+RabbitMQ:
+- Fokus queue processing
+
+Kafka:
+- Fokus event streaming
+
+==================================================
+USE CASE KAFKA
+==================================================
+
+1. Event Streaming
+- User activity tracking
+- Clickstream
+- Analytics
+
+--------------------------------------------------
+
+2. Log Aggregation
+- Centralized logging
+- Service logs
+- Monitoring logs
+
+--------------------------------------------------
+
+3. Realtime Analytics
+- Dashboard realtime
+- Fraud detection
+- Metrics processing
+
+--------------------------------------------------
+
+4. Microservices Event Bus
+- Event communication antar service
+
+Contoh:
+    order.created
+    payment.success
+
+--------------------------------------------------
+
+5. Data Pipeline
+- Sinkronisasi data antar system
+
+==================================================
+CORE COMPONENT
+==================================================
+
+Producer:
+- Mengirim event/message
+
+--------------------------------------------------
+
+Topic:
+- Tempat message disimpan
+
+Mirip:
+    category/channel
+
+Contoh:
+    orders
+    payments
+    logs
+
+--------------------------------------------------
+
+Consumer:
+- Membaca message dari topic
+
+--------------------------------------------------
+
+Broker:
+- Server Kafka
+
+--------------------------------------------------
+
+Partition:
+- Pembagian topic
+- Untuk parallel processing
+
+--------------------------------------------------
+
+Consumer Group:
+- Group consumer
+- Membagi workload
+
+==================================================
+FLOW KAFKA
+==================================================
+
+Producer
+    ↓
+Topic
+    ↓
+Partition
+    ↓
+Consumer Group
+    ↓
+Consumer
+
+==================================================
+INSTALL KAFKA
+==================================================
+
+Docker Compose biasanya dipakai.
+
+Contoh image:
+    bitnami/kafka
+    confluentinc/cp-kafka
+
+==================================================
+TOPIC
+==================================================
+
+Apa Itu?
+- Tempat stream data/event
+
+Contoh:
+    user-events
+    payment-events
+    order-events
+
+==================================================
+MESSAGE / EVENT
+==================================================
+
+Contoh:
+
+{
+  "event": "order.created",
+  "order_id": 1001
+}
+
+==================================================
+PARTITION
+==================================================
+
+Apa Itu?
+- Topic dibagi menjadi beberapa partition
+- Agar bisa parallel processing
+
+Contoh:
+
+Topic orders:
+    Partition 0
+    Partition 1
+    Partition 2
+
+==================================================
+KENAPA PARTITION PENTING?
+==================================================
+
+- Parallel processing
+- Scalability
+- High throughput
+
+==================================================
+OFFSET
+==================================================
+
+Apa Itu?
+- Nomor urut message di partition
+
+Contoh:
+
+Offset:
+    0
+    1
+    2
+    3
+
+Consumer membaca berdasarkan offset.
+
+==================================================
+REPLAY MESSAGE
+==================================================
+
+Keunggulan Kafka:
+- Consumer bisa baca ulang message lama
+
+Use Case:
+- Reprocessing data
+- Analytics ulang
+- Recovery system
+
+==================================================
+CONSUMER GROUP
+==================================================
+
+Apa Itu?
+- Sekumpulan consumer
+
+Tujuan:
+- Membagi workload
+
+==================================================
+CONSUMER GROUP FLOW
+==================================================
+
+Topic:
+    orders
+
+Partition:
+    P0
+    P1
+    P2
+
+Consumer Group:
+    C1
+    C2
+    C3
+
+Hasil:
+- Tiap consumer baca partition berbeda
+
+==================================================
+REAL CASE STREAMING
+==================================================
+
+User buka aplikasi:
+    ↓
+Event dikirim ke Kafka
+    ↓
+Analytics service baca
+    ↓
+Fraud service baca
+    ↓
+Recommendation service baca
+
+Satu event bisa dipakai banyak service.
+
+==================================================
+KAFKA VS RABBITMQ
+==================================================
+
+Kafka:
+- Event streaming
+- High throughput
+- Replay message
+- Big data processing
+
+Cocok untuk:
+- Analytics
+- Log streaming
+- Realtime pipeline
+
+--------------------------------------------------
+
+RabbitMQ:
+- Queue processing
+- Complex routing
+- Worker job
+
+Cocok untuk:
+- Background job
+- Email queue
+- Payment queue
+
+==================================================
+KAFKA VS REDIS
+==================================================
+
+Kafka:
+- Durable stream
+- Replay event
+- Distributed
+
+--------------------------------------------------
+
+Redis:
+- Super cepat
+- Simpler
+- Cache/queue ringan
+
+==================================================
+RETENTION
+==================================================
+
+Apa Itu?
+- Lama message disimpan
+
+Contoh:
+- 7 hari
+- 30 hari
+
+Walau consumer sudah baca:
+- Message tetap ada
+
+==================================================
+ORDERING
+==================================================
+
+Kafka menjamin ordering:
+- Di dalam partition yang sama
+
+==================================================
+DURABILITY
+==================================================
+
+Kafka menyimpan data:
+- Ke disk
+- Replication antar broker
+
+==================================================
+REPLICATION
+==================================================
+
+Apa Itu?
+- Copy partition ke broker lain
+
+Tujuan:
+- High availability
+- Fault tolerance
+
+==================================================
+REAL CASE PRODUCTION
+==================================================
+
+1. Banking
+- Transaction stream
+- Fraud detection
+- Audit log
+
+--------------------------------------------------
+
+2. E-commerce
+- Order event
+- Recommendation engine
+- Analytics
+
+--------------------------------------------------
+
+3. Social Media
+- Feed event
+- Notification
+- User activity tracking
+
+--------------------------------------------------
+
+4. Ride Hailing
+- Driver location stream
+- Realtime matching
+
+--------------------------------------------------
+
+5. IoT
+- Sensor data stream
+- Device telemetry
+
+==================================================
+KELEBIHAN KAFKA
+==================================================
+
+- High throughput
+- Horizontal scaling
+- Replay event
+- Durable
+- Cocok big data
+
+==================================================
+KEKURANGAN KAFKA
+==================================================
+
+- Lebih kompleks
+- Setup lebih berat
+- Tidak ideal untuk simple queue kecil
+
+==================================================
+KAPAN PAKAI KAFKA?
+==================================================
+
+Gunakan Kafka saat:
+- Event streaming massive
+- Big data pipeline
+- Realtime analytics
+- Banyak service consume event sama
+
+==================================================
+KAPAN TIDAK COCOK?
+==================================================
+
+Jangan pakai Kafka untuk:
+- Queue kecil sederhana
+- Simple background job
+- Aplikasi kecil
+
+==================================================
+EVENT DRIVEN ARCHITECTURE
+==================================================
+
+Contoh:
+
+Order Service:
+    publish order.created
+
+Payment Service:
+    consume order.created
+
+Notification Service:
+    consume order.created
+
+Analytics Service:
+    consume order.created
+
+==================================================
+TOOLS YANG SERING DIPAKAI
+==================================================
+
+Kafka UI:
+    provectuslabs/kafka-ui
+
+Docker Image:
+    bitnami/kafka
+
+Go Client:
+    github.com/segmentio/kafka-go
+
+Monitoring:
+    Prometheus
+    Grafana
+
+==================================================
+CONTOH PRODUCER GO
+==================================================
+
+writer.WriteMessages(ctx,
+    kafka.Message{
+        Key:   []byte("order"),
+        Value: []byte("order created"),
+    },
+)
+
+==================================================
+CONTOH CONSUMER GO
+==================================================
+
+for {
+    msg, _ := reader.ReadMessage(ctx)
+
+    fmt.Println(string(msg.Value))
+}
+
+==================================================
+BEST PRACTICE
+==================================================
+
+1. Pisahkan topic per domain
+
+Contoh:
+    order-events
+    payment-events
+    user-events
+
+--------------------------------------------------
+
+2. Gunakan partition yang cukup
+
+--------------------------------------------------
+
+3. Monitor lag consumer
+
+--------------------------------------------------
+
+4. Gunakan schema event yang konsisten
+
+--------------------------------------------------
+
+5. Gunakan replication
+
+==================================================
+INTERVIEW QUESTION
+==================================================
+
+Q:
+Apa fungsi Kafka?
+
+A:
+Distributed event streaming platform untuk realtime data pipeline dan event processing.
+
+--------------------------------------------------
+
+Q:
+Apa itu topic?
+
+A:
+Tempat message/event disimpan.
+
+--------------------------------------------------
+
+Q:
+Apa itu partition?
+
+A:
+Pembagian topic untuk parallel processing.
+
+--------------------------------------------------
+
+Q:
+Apa beda Kafka dan RabbitMQ?
+
+A:
+Kafka fokus event streaming dan replay event.
+RabbitMQ fokus queue dan worker processing.
+
+--------------------------------------------------
+
+Q:
+Apa itu consumer group?
+
+A:
+Sekumpulan consumer untuk membagi workload.
+
+--------------------------------------------------
+
+Q:
+Kenapa Kafka cocok untuk big data?
+
+A:
+Karena scalable, durable, dan high throughput.
