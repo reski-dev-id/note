@@ -588,3 +588,438 @@ Kapan SQL lebih cocok?
 ## A
 
 Saat relational data dan ACID transaction penting.
+
+
+# ACID VS BASE PRINCIPLE CHEAT SHEET
+
+---
+
+# ACID PRINCIPLE
+
+## Apa Itu?
+
+ACID adalah prinsip utama database relational (SQL).
+
+Tujuan:
+- Menjamin data tetap konsisten dan aman.
+
+Biasanya dipakai di:
+- MySQL
+- PostgreSQL
+- Oracle
+- SQL Server
+
+---
+
+# ACID = Atomicity, Consistency, Isolation, Durability
+
+---
+
+# A — ATOMICITY
+
+## Apa Itu?
+
+Semua proses dalam transaction:
+- harus sukses semua
+- atau gagal semua
+
+Tidak boleh setengah sukses.
+
+---
+
+## Contoh
+
+Transfer uang:
+
+```text
+Kurang saldo A
+Tambah saldo B
+```
+
+Kalau salah satu gagal:
+- semua dibatalkan
+
+---
+
+## Analogi
+
+Transfer bank:
+- uang tidak boleh hilang di tengah
+
+---
+
+# C — CONSISTENCY
+
+## Apa Itu?
+
+Data harus tetap valid sebelum dan sesudah transaction.
+
+Rule database:
+- tidak boleh rusak
+
+---
+
+## Contoh
+
+Saldo tidak boleh minus:
+
+```text
+balance >= 0
+```
+
+Kalau melanggar:
+- transaction gagal
+
+---
+
+# I — ISOLATION
+
+## Apa Itu?
+
+Transaction berjalan terpisah.
+
+Transaction lain:
+- tidak boleh ganggu data sementara
+
+---
+
+## Contoh
+
+2 user checkout stock bersamaan.
+
+Database harus:
+- hindari race condition
+
+---
+
+## Masalah Kalau Tidak Isolation
+
+- Dirty read
+- Lost update
+- Phantom read
+
+---
+
+# D — DURABILITY
+
+## Apa Itu?
+
+Kalau transaction sudah commit:
+- data harus tetap aman
+
+Walau:
+- server crash
+- listrik mati
+- restart database
+
+---
+
+## Contoh
+
+Transfer bank sukses:
+- data tetap ada setelah restart
+
+---
+
+# CONTOH ACID FLOW
+
+```text
+BEGIN TRANSACTION
+
+Kurang saldo A
+Tambah saldo B
+
+COMMIT
+```
+
+Kalau gagal:
+
+```text
+ROLLBACK
+```
+
+---
+
+# KELEBIHAN ACID
+
+- Data aman
+- Konsisten
+- Cocok financial system
+- Reliable
+
+---
+
+# KELEMAHAN ACID
+
+- Lebih berat
+- Scaling lebih sulit
+- Throughput lebih rendah
+
+---
+
+# USE CASE ACID
+
+1. Banking
+
+2. Payment gateway
+
+3. Financial reporting
+
+4. ERP
+
+5. Inventory system
+
+---
+
+# BASE PRINCIPLE
+
+## Apa Itu?
+
+BASE adalah prinsip umum NoSQL / distributed system.
+
+Tujuan:
+- Scalability
+- Availability
+- High throughput
+
+Biasanya dipakai di:
+- Cassandra
+- DynamoDB
+- MongoDB
+- Redis
+- Couchbase
+
+---
+
+# BASE = Basically Available, Soft State, Eventually Consistent
+
+---
+
+# B — BASICALLY AVAILABLE
+
+## Apa Itu?
+
+System:
+- harus tetap available
+- walau sebagian node gagal
+
+---
+
+## Contoh
+
+1 server mati:
+- system tetap jalan
+
+---
+
+# S — SOFT STATE
+
+## Apa Itu?
+
+Data bisa berubah seiring waktu.
+
+Karena:
+- replication asynchronous
+- eventual consistency
+
+---
+
+## Artinya
+
+Node A dan B:
+- bisa sementara beda data
+
+---
+
+# E — EVENTUALLY CONSISTENT
+
+## Apa Itu?
+
+Data akhirnya akan sinkron.
+
+Tapi:
+- tidak harus langsung konsisten realtime
+
+---
+
+## Contoh
+
+User update profile:
+- server lain mungkin update beberapa detik kemudian
+
+---
+
+# CONTOH BASE FLOW
+
+```text
+User update data
+    ↓
+Node A update dulu
+    ↓
+Node lain sync belakangan
+```
+
+---
+
+# KELEBIHAN BASE
+
+- Sangat scalable
+- High availability
+- Cocok distributed system
+- High throughput
+
+---
+
+# KELEMAHAN BASE
+
+- Konsistensi tidak langsung
+- Bisa temporary inconsistent
+- Tidak cocok financial critical
+
+---
+
+# USE CASE BASE
+
+1. Social media feed
+
+2. Analytics
+
+3. Chat system
+
+4. IoT telemetry
+
+5. Recommendation engine
+
+---
+
+# ACID VS BASE
+
+| Feature | ACID | BASE |
+|---|---|---|
+| Consistency | Strong | Eventually |
+| Availability | Medium | Tinggi |
+| Scalability | Lebih sulit | Sangat scalable |
+| Transaction | Sangat kuat | Terbatas |
+| Speed | Medium | Tinggi |
+| Cocok untuk | Financial | Big data/realtime |
+
+---
+
+# CONTOH REAL CASE
+
+## ACID
+
+Transfer bank:
+
+```text
+Saldo A -100
+Saldo B +100
+```
+
+Harus:
+- exact
+- konsisten
+- tidak boleh salah
+
+---
+
+## BASE
+
+Instagram like count:
+
+```text
+1001 likes
+```
+
+Kalau delay 1-2 detik:
+- masih acceptable
+
+---
+
+# KAPAN PAKAI ACID?
+
+Gunakan ACID saat:
+- Data critical
+- Financial
+- Transaction penting
+- Konsistensi wajib
+
+---
+
+# KAPAN PAKAI BASE?
+
+Gunakan BASE saat:
+- Big scale system
+- Realtime massive
+- Availability lebih penting
+- Temporary inconsistency acceptable
+
+---
+
+# ANALOGI
+
+## ACID
+
+Bank transfer:
+- harus presisi 100%
+
+---
+
+## BASE
+
+Jumlah like social media:
+- telat update sedikit tidak masalah
+
+---
+
+# INTERVIEW QUESTION
+
+## Q
+
+Apa beda ACID dan BASE?
+
+## A
+
+ACID fokus consistency dan transaction safety.
+BASE fokus scalability dan availability.
+
+---
+
+## Q
+
+Kenapa SQL biasanya ACID?
+
+## A
+
+Karena relational database butuh consistency kuat.
+
+---
+
+## Q
+
+Kenapa NoSQL sering BASE?
+
+## A
+
+Karena distributed system lebih fokus scalability dan availability.
+
+---
+
+## Q
+
+Apakah BASE berarti data salah?
+
+## A
+
+Tidak.
+Data akhirnya tetap sinkron (eventually consistent).
+
+---
+
+## Q
+
+Kapan ACID wajib?
+
+## A
+
+Banking, payment, inventory, financial system.
