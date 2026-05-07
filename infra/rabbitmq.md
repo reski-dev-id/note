@@ -607,53 +607,476 @@ for msg := range msgs {
 
 ---
 
-# INTERVIEW QUESTION
+# ACKNOWLEDGEMENT (ACK)
 
-## Q
+## Apa Itu?
 
-Apa fungsi RabbitMQ?
-
-## A
-
-Message broker untuk asynchronous communication dan queue processing.
+Consumer memberi tahu:
+- Message berhasil diproses
 
 ---
 
-## Q
+## Flow ACK
 
-Apa beda producer dan consumer?
+```text
+Consume → proses OK → ACK → hilang
+```
 
-## A
-
-Producer mengirim message.  
-Consumer menerima dan memproses message.
-
----
-
-## Q
-
-Kenapa pakai RabbitMQ?
-
-## A
-
-Untuk background processing, decouple service, dan retry queue.
+```text
+✔ di-consume
+✔ di-ack
+❌ hilang dari queue
+```
 
 ---
 
-## Q
+## Contoh ACK
 
-Apa itu ACK?
-
-## A
-
-Konfirmasi bahwa message berhasil diproses.
+```go
+msg.Ack(false)
+```
 
 ---
 
-## Q
+## Kapan ACK?
 
-Apa itu DLQ?
+Gunakan saat:
+- Database sukses
+- API external sukses
+- File sukses diproses
+- Semua logic selesai tanpa error
 
-## A
+---
 
-Dead Letter Queue untuk message gagal.
+# NACK (NEGATIVE ACKNOWLEDGEMENT)
+
+## Apa Itu?
+
+Consumer memberi tahu:
+- Message gagal diproses
+
+RabbitMQ bisa:
+- Retry
+- Requeue
+- Masuk DLQ
+
+---
+
+## Flow NACK
+
+```text
+✔ di-consume
+✔ di-nack
+✔ balik ke queue
+```
+
+---
+
+## Contoh NACK
+
+```go
+msg.Nack(false, true)
+```
+
+Artinya:
+- gagal process
+- masukkan kembali ke queue
+
+---
+
+# FLOW PRODUKSI YANG BENAR
+
+```go
+try {
+    proses job
+
+    kalau sukses:
+        ACK
+
+    kalau gagal:
+        NACK (requeue)
+}
+```
+
+---
+
+# DEAD LETTER QUEUE (DLQ)
+
+## Apa Itu?
+
+Queue khusus message gagal.
+
+---
+
+## Use Case
+
+```text
+retry > 3
+    ↓
+masuk DLQ
+```
+
+---
+
+## Kenapa Penting?
+
+Tanpa DLQ:
+- Message gagal infinite retry
+
+Dengan DLQ:
+- Bisa debugging
+- Bisa manual retry
+- Tidak ganggu queue utama
+
+---
+
+# TTL (TIME TO LIVE)
+
+## Apa Itu?
+
+Message expire otomatis.
+
+---
+
+## Dipakai Untuk
+
+- Delay job
+- OTP expiration
+- Cleanup message lama
+
+---
+
+## Contoh
+
+```text
+x-message-ttl = 60000
+```
+
+Artinya:
+- expire setelah 60 detik
+
+---
+
+# DURABILITY
+
+## Apa Itu?
+
+Message tetap aman walau RabbitMQ restart.
+
+---
+
+## Durable Queue
+
+```text
+durable = true
+```
+
+---
+
+## Persistent Message
+
+```text
+delivery_mode = 2
+```
+
+---
+
+## Kenapa Penting?
+
+Kalau tidak durable:
+- restart RabbitMQ
+- message hilang
+
+---
+
+# READY VS UNACKED
+
+## READY
+
+Message:
+- belum diambil worker
+
+---
+
+## UNACKED
+
+Message:
+- sudah diambil worker
+- tapi belum ACK
+
+---
+
+## Flow
+
+```text
+Queue (Ready)
+   ↓ consume
+Worker
+   ↓
+Unacked
+   ↓
+ACK → hilang
+NACK → balik / DLQ
+```
+
+---
+
+# BAHAYA UNACKED NUMPUK
+
+Kalau Unacked banyak:
+- worker stuck
+- queue macet
+- memory naik
+- throughput turun
+
+---
+
+# REQUEUE LOOP (BAHAYA)
+
+## Flow Buruk
+
+```text
+NACK(true)
+    ↓
+masuk lagi
+    ↓
+error lagi
+    ↓
+NACK lagi
+```
+
+Infinite loop.
+
+---
+
+# SOLUSI REQUEUE LOOP
+
+- Retry limit
+- DLQ
+- Backoff delay
+
+---
+
+# IDEMPOTENCY (WAJIB)
+
+## Kenapa Penting?
+
+RabbitMQ:
+- at least once delivery
+
+Artinya:
+- message bisa duplicate
+
+---
+
+# SOLUSI IDEMPOTENCY
+
+Gunakan:
+- job_id
+- transaction_id
+- Redis check
+
+---
+
+## Contoh
+
+```text
+job sudah pernah diproses?
+    ya -> skip
+    tidak -> process
+```
+
+---
+
+# SCALING WORKER
+
+## Apa Itu?
+
+Tambah banyak worker:
+- process lebih paralel
+
+---
+
+# Tapi Harus:
+
+✔ idempotent  
+✔ prefetch  
+✔ retry limit  
+✔ DLQ
+
+---
+
+# PREFETCH
+
+## Apa Itu?
+
+Jumlah maksimal message yang boleh diambil worker sebelum ACK.
+
+---
+
+## Contoh
+
+```text
+prefetch = 1
+```
+
+Artinya:
+- worker ambil 1 job
+- selesaikan dulu
+- baru ambil berikutnya
+
+---
+
+# TANPA PREFETCH
+
+## Masalah
+
+1 worker bisa ambil:
+- banyak message sekaligus
+
+Akibat:
+- semua jadi Unacked
+- worker stuck
+- queue tidak fair
+
+---
+
+# TUJUAN PREFETCH
+
+## 1. Hindari Race Condition
+
+1 worker:
+- tidak ambil terlalu banyak job
+
+---
+
+## 2. Hindari Unacked Numpuk
+
+Job:
+- tidak nyangkut di worker
+
+---
+
+## 3. Fair Distribution
+
+Kalau banyak worker:
+- job dibagi rata
+
+---
+
+# BOTTLENECK YANG SERING TERJADI
+
+❌ Prefetch tidak diset  
+→ Unacked numpuk
+
+❌ Tidak idempotent  
+→ duplicate chaos
+
+❌ 1 queue untuk semua job  
+→ saling block
+
+❌ Worker lambat  
+→ Ready numpuk
+
+---
+
+# ACK VS NACK TABLE
+
+| Command | Scope | Hasil | Risiko |
+|---|---|---|---|
+| `Ack(false)` | 1 msg | selesai, hapus | aman |
+| `Ack(true)` | batch | semua dihapus | over-ack |
+| `Nack(false, true)` | 1 msg | retry | loop kalau salah logic |
+| `Nack(false, false)` | 1 msg | drop / DLQ | kehilangan job |
+| `Nack(true, true)` | batch | semua retry | duplicate mass |
+| `Nack(true, false)` | batch | semua drop | data loss mass |
+
+---
+
+# YANG DISARANKAN
+
+## Sukses
+
+```go
+msg.Ack(false)
+```
+
+---
+
+## Retry
+
+```go
+msg.Nack(false, true)
+```
+
+---
+
+## Drop / DLQ
+
+```go
+msg.Nack(false, false)
+```
+
+---
+
+# YANG BERBAHAYA
+
+```go
+msg.Ack(true)
+
+msg.Nack(true, true)
+
+msg.Nack(true, false)
+```
+
+---
+
+# KENAPA BERBAHAYA?
+
+Karena:
+- bukan 1 message
+- tapi seluruh batch
+
+---
+
+# RULE PENTING
+
+```text
+false = aman
+true  = bahaya
+```
+
+---
+
+# BEST PRACTICE TAMBAHAN
+
+1. Gunakan manual ACK
+
+2. Gunakan retry limit
+
+3. Gunakan DLQ
+
+4. Gunakan prefetch
+
+5. Gunakan idempotency
+
+6. Pisahkan queue per domain
+
+Contoh:
+
+```text
+payment_queue
+email_queue
+notification_queue
+```
+
+---
+
+# KALAU TIDAK?
+
+Cepat atau lambat:
+- duplicate
+- stuck worker
+- infinite retry
+- data loss
+- queue bottleneck
