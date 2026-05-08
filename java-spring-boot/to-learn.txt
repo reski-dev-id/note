@@ -1,0 +1,160 @@
+Spring Boot Minimum Skills for Backend Engineer
+
+1. Java Fundamental — wajib kuat
+
+Minimal paham:
+- OOP
+- interface vs abstract class
+- collections
+- streams
+- exception handling
+- generics
+- multithreading basic
+- memory basics
+- Optional
+- lambda
+
+Bank sering tanya:
+- concurrency
+- thread safety
+- immutable object
+- synchronization
+
+2. Spring Boot Core
+
+Minimal bisa:
+- bikin REST API
+- controller/service/repository layering
+- dependency injection
+- configuration properties
+- DTO
+- validation
+- exception handler global
+- pagination
+- filtering
+- logging
+
+Flow:
+Client → Controller → Service → Repository → DB
+
+3. Database
+
+Minimal:
+- SQL kuat
+- JOIN
+- indexing basic
+- normalization
+- transaction
+- query optimization basic
+
+Biasanya:
+- PostgreSQL
+- MySQL
+- Oracle
+
+Harus bisa:
+- design schema sederhana
+- baca slow query
+- ngerti N+1 query problem
+
+4. JPA / Hibernate
+
+Minimal:
+- entity relation
+- OneToMany
+- ManyToOne
+- lazy vs eager loading
+- JPQL
+- pagination
+- transaction management
+
+5. API Design
+
+Minimal ngerti:
+- REST convention
+- HTTP status code
+- authentication basic
+- JSON response structure
+- versioning
+- idempotency
+
+6. Security Basic
+
+Minimal:
+- JWT
+- authentication vs authorization
+- password hashing
+- Spring Security basic
+- CORS
+- OWASP basic awareness
+
+7. Git
+
+Minimal:
+- branch
+- merge
+- rebase basic
+- PR workflow
+- resolve conflict
+
+8. Docker
+
+Minimal:
+- bikin Dockerfile
+- docker compose
+- run app + db
+- environment variable
+
+9. Testing
+
+Minimal:
+- unit test
+- Mockito
+- integration test basic
+
+10. Deployment & DevOps basic
+
+Minimal ngerti:
+- CI/CD concept
+- environment dev/staging/prod
+- logs
+- Linux command basic
+- nginx basic
+
+Yang bikin naik level cepat:
+- Kafka
+- Redis
+- Kubernetes
+- Microservices
+- API Gateway
+- OAuth2
+- Observability
+- Distributed tracing
+
+Realita interview bank:
+Junior–mid:
+- Java fundamentals
+- SQL
+- Spring Boot architecture
+- API design
+- problem solving
+
+Mid–senior:
+- system design
+- scalability
+- concurrency
+- microservices
+- distributed systems
+
+Minimal portfolio yang dianggap “real”:
+- auth JWT
+- role permission
+- CRUD
+- pagination
+- file upload
+- Docker
+- Swagger/OpenAPI
+- logging
+- unit test
+- PostgreSQL
+- proper layered architecture
